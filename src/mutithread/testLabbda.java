@@ -19,6 +19,7 @@ public class testLabbda {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        //这个值在线程中最后会改变
         a.age += 1;
     }
 }
