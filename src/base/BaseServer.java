@@ -1,5 +1,6 @@
 package base;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -78,13 +79,40 @@ public class BaseServer {
         socket.close();
     }
 
+
+    /**
+     * 根据长度读取
+     * @throws IOException
+     */
+    public void runServer3() throws Exception {
+        this.server = new ServerSocket(this.port);
+        this.socket = server.accept();
+        this.inputStream = socket.getInputStream();
+        this.outputStream = socket.getOutputStream();
+        byte[] bytes;
+        while (true) {
+            int first = inputStream.read();
+            if (first == -1) {
+                System.out.println("This is no data, close socket");
+                this.socket.close();
+                break;
+            }
+            int second = inputStream.read();
+            int length = (first << 8) + second;
+            bytes = new byte[length];
+            inputStream.read(bytes);
+            System.out.println("Received msg form client: [" + new String(bytes, "UTF-8") + "]");
+        }
+    }
+
     public static void main(String[] args) {
         BaseServer bs = new BaseServer(9799);
         try {
 //            bs.runServerSingle();
 //            bs.runServer();
             //多次接受
-            bs.runServer2();
+//            bs.runServer2();
+            bs.runServer3(); // 根据长度读取
         } catch (Exception e) {
             e.printStackTrace();
         }

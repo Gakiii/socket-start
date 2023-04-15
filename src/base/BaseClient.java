@@ -63,6 +63,26 @@ public class BaseClient {
         this.outputStream.write(sendMsg.getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * 根据长度发送
+     * @param
+     * @throws IOException
+     */
+    public void sendMessage3() throws Exception {
+        this.outputStream = socket.getOutputStream();
+        Scanner sc = new Scanner(System.in);
+        while (sc.hasNextLine()) {
+            sendWithLen(sc.nextLine());
+        }
+    }
+    public void sendWithLen(String message) throws Exception{
+        byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
+        int length = bytes.length;
+        this.outputStream.write(length >> 8);
+        this.outputStream.write(length);
+        this.outputStream.write(bytes);
+    }
+
     public static void main(String[] args) throws IOException {
         BaseClient bc = new BaseClient("127.0.0.1", 9799);
         try {
@@ -70,7 +90,8 @@ public class BaseClient {
 //            bc.sendSingle("this is client");
 //            bc.sendMessage("second send");
             // 多次发送
-            bc.sendMessage2();
+//            bc.sendMessage2();
+            bc.sendMessage3();//根据长度发送
         } catch (Exception e) {
             e.printStackTrace();
         }
