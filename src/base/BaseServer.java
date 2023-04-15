@@ -5,6 +5,9 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 public class BaseServer {
     private ServerSocket server;
@@ -58,11 +61,30 @@ public class BaseServer {
         this.socket.close();
     }
 
+    /**
+     * 多次对话
+     * @throws Exception
+     */
+    public void runServer2() throws Exception {
+        this.server = new ServerSocket(this.port);
+        System.out.println("server has been started.");
+        this.socket = server.accept();
+        this.inputStream = socket.getInputStream();
+        Scanner sc = new Scanner(inputStream);
+        while (sc.hasNextLine()) {
+            System.out.println("get info from client : [" + sc.nextLine() + "]");
+        }
+        this.inputStream.close();
+        socket.close();
+    }
+
     public static void main(String[] args) {
         BaseServer bs = new BaseServer(9799);
         try {
 //            bs.runServerSingle();
-            bs.runServer();
+//            bs.runServer();
+            //多次接受
+            bs.runServer2();
         } catch (Exception e) {
             e.printStackTrace();
         }
