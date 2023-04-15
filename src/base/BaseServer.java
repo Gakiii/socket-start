@@ -1,14 +1,17 @@
 package base;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class BaseServer {
     private ServerSocket server;
     private Socket socket;
     private int port;
     private InputStream inputStream;
+    private OutputStream outputStream;
     private static final  int MAX_BUFFER_SIZE = 1024;
 
     public int getPort() {
@@ -41,10 +44,25 @@ public class BaseServer {
         server.close();
     }
 
+    public void runServer() throws Exception{
+        this.server = new ServerSocket(this.port);
+        this.socket = server.accept();
+        this.inputStream = socket.getInputStream();
+        String message = new String(inputStream.readAllBytes(), "UTF-8");
+        System.out.println("received message: + [" + message + "]");
+        this.socket.shutdownInput();
+        this.outputStream = socket.getOutputStream();
+        String receipt = "We received your message: [" + message + "]";
+        outputStream.write(receipt.getBytes(StandardCharsets.UTF_8));
+        this.outputStream.close();
+        this.socket.close();
+    }
+
     public static void main(String[] args) {
         BaseServer bs = new BaseServer(9799);
         try {
-            bs.runServerSingle();
+//            bs.runServerSingle();
+            bs.runServer();
         } catch (Exception e) {
             e.printStackTrace();
         }
